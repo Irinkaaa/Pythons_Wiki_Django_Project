@@ -45,7 +45,6 @@ def login_user(request):
         return render(request, 'auth/login.html', context)
     else:
         login_form = LoginForm(request.POST)
-
         return_url = get_redirect_url(request.POST)
 
         if login_form.is_valid():
