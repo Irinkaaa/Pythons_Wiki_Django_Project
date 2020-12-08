@@ -1,6 +1,11 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, FormView
+
+from pythons_core.decorators import group_required
 from .forms import PythonCreateForm, FilterForm
 from .models import Python
 
@@ -57,22 +62,32 @@ def python_details(request, pk, slug=None):
 
 
 # @group_required(groups=['Regular User'])
-@login_required
-def create(req):
-    if req.method == 'GET':
-        context = {
-            'form': PythonCreateForm(),
-            'current_page': 'create',
-        }
-        return render(req, 'create.html', context)
-    else:
-        form = PythonCreateForm(req.POST, req.FILES)
-        print(form)
-        if form.is_valid():
-            form.save()
-            return redirect('index')
-        context = {
-            'form': form,
-            'current_page': 'create',
-        }
-        return render(req, 'create.html', context)
+# @login_required
+# def create(req):
+#     if req.method == 'GET':
+#         context = {
+#             'form': PythonCreateForm(),
+#             'current_page': 'create',
+#         }
+#         return render(req, 'create.html', context)
+#     else:
+#         form = PythonCreateForm(req.POST, req.FILES)
+#         print(form)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('index')
+#         context = {
+#             'form': form,
+#             'current_page': 'create',
+#         }
+#         return render(req, 'create.html', context)
+
+@method_decorator(group_required(groups=['Regular User']), name='dispatch')
+class PythonCreateView(LoginRequiredMixin, FormView):
+    form_class = PythonCreateForm
+    template_name = 'create.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

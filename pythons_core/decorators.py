@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 
 
-def group_required(groups=[]):
+def group_required(groups=None):
+    if groups is None:
+        groups = []
     groups_set = set(groups)
 
     def decorator(view_func):
@@ -16,4 +18,5 @@ def group_required(groups=[]):
                 return HttpResponse("You're not authorized")
 
         return wrapper
+
     return decorator
