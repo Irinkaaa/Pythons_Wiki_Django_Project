@@ -88,6 +88,7 @@ class PythonCreateView(GroupRequiredMixin, LoginRequiredMixin, FormView):
     form_class = PythonCreateForm
     template_name = 'create.html'
     success_url = reverse_lazy('index')
+    groups = ['Regular User']
 
     def form_valid(self, form):
         form.save()
