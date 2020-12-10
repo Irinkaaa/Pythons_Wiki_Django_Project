@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView
 
 from pythons_core.decorators import group_required
+from pythons_core.view_mixin import GroupRequiredMixin
 from .forms import PythonCreateForm, FilterForm
 from .models import Python
 
@@ -82,8 +83,8 @@ def python_details(request, pk, slug=None):
 #         }
 #         return render(req, 'create.html', context)
 
-@method_decorator(group_required(groups=['Regular User']), name='dispatch')
-class PythonCreateView(LoginRequiredMixin, FormView):
+# @method_decorator(group_required(groups=['Regular User']), name='dispatch')
+class PythonCreateView(GroupRequiredMixin, LoginRequiredMixin, FormView):
     form_class = PythonCreateForm
     template_name = 'create.html'
     success_url = reverse_lazy('index')
